@@ -1,0 +1,42 @@
+{
+  "name": "react-native-map-picker",
+  "version": "0.0.1",
+  "description": "A package to help user select location on google map. Uses react-native-maps",
+  "main": "index.js",
+  "author": "Afshin Talebi <afshin.talebi@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/afshintalebi/react-native-map-picker"
+  },
+  "homepage": "https://github.com/afshintalebi/react-native-map-picker#readme",
+  "keywords": [
+    "map",
+    "google",
+    "google-map",
+    "places",
+    "react-component",
+    "react-native",
+    "ios",
+    "android",
+    "location",
+    "location-picker"
+  ],
+  "bugs": {
+    "url": "https://github.com/afshintalebi/react-native-map-picker"
+  },
+  "files": [
+    "index.js",
+    "src/*"
+  ],
+  "peerDependencies": {
+    "react": "16.8.6",
+    "react-native": "0.59.7",
+    "react-native-maps": "^0.24.2",
+    "react-native-vector-icons": "^6.4.2"
+  },
+  "dependencies": {
+    "prop-types": "^15.7.2"
+  }
+}
