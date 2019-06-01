@@ -1,6 +1,6 @@
 {
   "name": "react-native-map-picker",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A package to help user select location on google map. Uses react-native-maps",
   "main": "index.js",
   "author": "Afshin Talebi <afshin.talebi@gmail.com>",

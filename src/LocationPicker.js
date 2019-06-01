@@ -1,10 +1,10 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import {ActivityIndicator, TouchableOpacity, View, Text} from 'react-native'
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps'
+import { ActivityIndicator, TouchableOpacity, View, Text, Platform, PermissionsAndroid } from 'react-native'
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import styles from './Styles/LocationPicker'
 
-const DEFAULT_DELTA = {latitudeDelta: 0.015, longitudeDelta: 0.0121};
+const DEFAULT_DELTA = {latitudeDelta: 0.015, longitudeDelta: 0.0121}
 
 export default class LocationPicker extends Component {
     static propTypes = {
@@ -31,17 +31,16 @@ export default class LocationPicker extends Component {
             ...DEFAULT_DELTA,
             ...this.props.initialCoordinate
         },
-        marker: this.props.initialCoordinate
+        marker: this.props.initialCoordinate,
     }
 
-    componentDidMount() {
+    componentDidMount () {
         const {initialCoordinate} = this.props
         if (initialCoordinate)
             this.setPosition(initialCoordinate)
         else
             this.getCurrentPosition()
     }
-
 
     setPosition = ({latitude, longitude}) => {
         this.setState({
@@ -67,10 +66,41 @@ export default class LocationPicker extends Component {
         }
     }
 
+    async requestLocationPermission () {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            )
+
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                this._getCurrentLocation()
+                console.log('Location permission granted')
+            } else {
+                console.log('Location permission denied')
+            }
+        } catch (err) {
+            console.warn(err)
+        }
+    }
+
+    _getCurrentLocation = () => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                this.setPosition(position.coords)
+            },
+            (error) => {
+                this.setState({error: error.message})
+            },
+            {enableHighAccuracy: true, timeout: 200000, maximumAge: 1000},
+        )
+    }
+
     getCurrentPosition = async () => {
-        navigator.geolocation.getCurrentPosition((position) => {
-            this.setPosition(position.coords)
-        })
+        if (Platform.OS === 'android') {
+            this.requestLocationPermission()
+        } else {
+            this._getCurrentLocation()
+        }
     }
 
     onMarkerDragEnd = (e) => {
@@ -97,7 +127,7 @@ export default class LocationPicker extends Component {
         )
     }
 
-    render() {
+    render () {
         const {loading} = this.state
         const {buttonText, buttonStyle, textStyle, ...props} = this.props
         return (
@@ -122,6 +152,6 @@ export default class LocationPicker extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-        );
+        )
     }
 }
