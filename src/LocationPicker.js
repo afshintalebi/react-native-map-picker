@@ -4,7 +4,7 @@ import { ActivityIndicator, TouchableOpacity, View, Text, Platform, PermissionsA
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import styles from './Styles/LocationPicker'
 
-const DEFAULT_DELTA = {latitudeDelta: 0.015, longitudeDelta: 0.0121}
+const DEFAULT_DELTA = { latitudeDelta: 0.015, longitudeDelta: 0.0121 }
 
 export default class LocationPicker extends Component {
     static propTypes = {
@@ -15,7 +15,8 @@ export default class LocationPicker extends Component {
         buttonText: PropTypes.string,
         buttonStyle: PropTypes.object,
         textStyle: PropTypes.object,
-        onLocationSelect: PropTypes.func
+        onLocationSelect: PropTypes.func,
+        minZoomLevel: PropTypes.number
     }
 
     static defaultProps = {
@@ -23,6 +24,7 @@ export default class LocationPicker extends Component {
         buttonStyle: {},
         textStyle: {},
         onLocationSelect: (coordinates) => ({}),
+        minZoomLevel: 16,
     }
 
     state = {
@@ -34,15 +36,15 @@ export default class LocationPicker extends Component {
         marker: this.props.initialCoordinate,
     }
 
-    componentDidMount () {
-        const {initialCoordinate} = this.props
+    componentDidMount() {
+        const { initialCoordinate } = this.props
         if (initialCoordinate)
             this.setPosition(initialCoordinate)
         else
             this.getCurrentPosition()
     }
 
-    setPosition = ({latitude, longitude}) => {
+    setPosition = ({ latitude, longitude }) => {
         this.setState({
             loading: false,
             coordinate: {
@@ -58,15 +60,15 @@ export default class LocationPicker extends Component {
     }
 
     getSelectedPosition = () => {
-        const {coordinate} = this.state
-        const {latitude, longitude} = coordinate
+        const { coordinate } = this.state
+        const { latitude, longitude } = coordinate
         return {
             latitude,
             longitude
         }
     }
 
-    async requestLocationPermission () {
+    async requestLocationPermission() {
         try {
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -89,9 +91,9 @@ export default class LocationPicker extends Component {
                 this.setPosition(position.coords)
             },
             (error) => {
-                this.setState({error: error.message})
+                this.setState({ error: error.message })
             },
-            {enableHighAccuracy: true, timeout: 200000, maximumAge: 1000},
+            { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
         )
     }
 
@@ -104,17 +106,17 @@ export default class LocationPicker extends Component {
     }
 
     onMarkerDragEnd = (e) => {
-        const {coordinate} = e.nativeEvent
+        const { coordinate } = e.nativeEvent
         this.setPosition(coordinate)
     }
 
     onMapPress = (e) => {
-        const {coordinate} = e.nativeEvent
+        const { coordinate } = e.nativeEvent
         this.setPosition(coordinate)
     }
 
     onSelect = () => {
-        const {onLocationSelect} = this.props
+        const { onLocationSelect } = this.props
         if (typeof onLocationSelect === 'function')
             onLocationSelect(this.getSelectedPosition())
     }
@@ -122,14 +124,14 @@ export default class LocationPicker extends Component {
     getIndicator = () => {
         return (
             <View style={styles.indicatorContainer}>
-                <ActivityIndicator size={'large'}/>
+                <ActivityIndicator size={'large'} />
             </View>
         )
     }
 
-    render () {
-        const {loading} = this.state
-        const {buttonText, buttonStyle, textStyle, ...props} = this.props
+    render() {
+        const { loading } = this.state
+        const { buttonText, buttonStyle, textStyle, minZoomLevel, ...props } = this.props
         return (
             loading
                 ? this.getIndicator()
@@ -138,17 +140,17 @@ export default class LocationPicker extends Component {
                         provider={PROVIDER_GOOGLE}
                         style={styles.mapView}
                         initialRegion={this.state.coordinate}
-                        minZoomLevel={16}
+                        minZoomLevel={minZoomLevel}
                         onPress={this.onMapPress}
                         {...props}>
                         <Marker draggable
-                                coordinate={this.state.marker}
-                                onDragEnd={this.onMarkerDragEnd}
+                            coordinate={this.state.marker}
+                            onDragEnd={this.onMarkerDragEnd}
                         />
                     </MapView>
                     <View style={styles.selectBtnContainer}>
-                        <TouchableOpacity style={{...styles.selectBtn, ...buttonStyle}} onPress={this.onSelect}>
-                            <Text style={{...styles.selectBtnText, ...textStyle}}>{buttonText}</Text>
+                        <TouchableOpacity style={{ ...styles.selectBtn, ...buttonStyle }} onPress={this.onSelect}>
+                            <Text style={{ ...styles.selectBtnText, ...textStyle }}>{buttonText}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
